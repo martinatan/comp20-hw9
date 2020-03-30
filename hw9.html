@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8"/>
+
+<style>
+body {
+	background-color: #D0E37F;
+	font-family: Helvetica, Sans-Serif;
+	color: #330c40;
+	display: inline-block;
+}
+
+h1 {
+	text-align: center;
+	font-size: 36px;
+}
+
+h2 {
+	text-align: center;
+	font-style: italic;
+}
+
+.track {
+	font-size: 26px;
+}
+
+.serialized {
+	font-size: 14px;
+}
+
+.setlistTitle {
+	border: solid 2px #de0090;
+	background-color: #f4f79e;
+}
+
+.title {
+	font-size: 28px;
+	color: #de0090;
+	font-weight: bold;
+	font-style: italic;
+}
+
+#filterForm{
+	text-align: center;
+}
+</style>
+
+<script>
+
+//returns an HTML string to display an song from the JSON array
+function printSong(arrIndex) {
+	htmlString = "";
+	htmlString += "<div class><p class = 'track'>";
+
+	//title
+	htmlString += "<div class = 'title'>"+ setlistObj[arrIndex]['title'] +
+		"<br></div>";
+
+	//artists
+	htmlString +="<strong>Artist:</strong> ";
+	for (j = 0; j < setlistObj[arrIndex]["artists"].length; j++)
+	{
+		htmlString += setlistObj[arrIndex]['artists'][j];
+		if (j < setlistObj[arrIndex]["artists"].length - 1)
+		{
+			htmlString += ", ";
+		}
+	}
+	htmlString +="<br>";
+
+	//genres
+	htmlString +="<strong>Genre:</strong> ";
+	for (k = 0; k < setlistObj[arrIndex]["music genre"].length; k++)
+	{
+		htmlString += setlistObj[arrIndex]['music genre'][k];
+		if (k < setlistObj[arrIndex]["music genre"].length - 1)
+		{
+			htmlString += ", ";
+		}
+	}
+	htmlString +="<br>";
+
+	//release year
+	htmlString += "Released "+ setlistObj[arrIndex]['release year'] + "<br>"
+	htmlString += "</p></div>";
+	return htmlString;
+}
+
+//displays songs with the genre that matches the form submission
+function filterSearch() {
+	//refresh the div
+	document.getElementById("filteredDisplay").innerHTML = "";
+
+	var selected = document.getElementById("genres").value;
+
+	//check through JSON array for songs with matching genre
+	for (l = 0; l < setlistObj.length; l++)
+	{
+		//check that current song has the selected genre
+		var containsGenre = false;
+		for (m = 0; m < setlistObj[l]["music genre"].length; m++)
+		{
+			if (setlistObj[l]["music genre"][m] == selected)
+			{
+				containsGenre = true;
+			}
+		}
+		//if so, proceed with displaying the song
+		if (containsGenre == true)
+		{
+			songHTML = printSong(l);
+			document.getElementById("filteredDisplay").innerHTML += songHTML;
+		}
+	}
+}
+
+// createForm: compiles the HTML for the filter dropdown
+function createForm() {
+	var formHTML = "";
+	formHTML += '<label for="genres"><h2>Filter by Genre:</h2></label><select id="genres" name="genres" form="genres">';
+
+	var addedGenres = []; // help keep track of added genres
+	for (n = 0; n < setlistObj.length; n++) //go through songs array
+	{
+		for (p = 0; p < setlistObj[n]["music genre"].length; p++)
+		{
+			var currGenre = setlistObj[n]["music genre"][p];
+
+			// only adds to menu if the genre is not already on the menu
+			if (!(addedGenres.includes(currGenre)))
+			{
+				formHTML += '<option value="' + currGenre + '">' +
+					currGenre + '</option>';
+				addedGenres.push(currGenre);
+			}
+		}
+	}
+
+	formHTML += '</select><button onclick="filterSearch()">Submit</button>';
+		
+	document.getElementById("filterForm").innerHTML = formHTML;
+}
+</script>
+</head>
+
+
+<body>
+<div id="display"></div>
+
+<div id="filterForm"></div>
+
+<div id="filteredDisplay"></div>
+
+<script language = javascript>
+var setlistObj = [
+	{
+		"artists": ["TLC"],
+		"title": "Waterfalls",
+		"music genre": ["RnB"],
+		"release year": "1994"
+	},
+	{
+		"artists": ["Charli XCX", "Troye Sivan"],
+		"title": "1999",
+		"music genre": ["Pop"],
+		"release year": "2018"
+	},
+	{
+		"artists": ["The Killers"],
+		"title": "Mr. Brightside",
+		"music genre": ["Rock"],
+		"release year": "2003"
+	},
+	{
+		"artists": ["Glass Animals"],
+		"title": "Youth",
+		"music genre": ["Alternative", "Indie"],
+		"release year": "2016"
+	},
+	{
+		"artists": ["Chumbawamba"],
+		"title": "Tubthumping",
+		"music genre": ["Dance Rock"],
+		"release year": "1997"
+	},
+	{
+		"artists": ["Counting Crows"],
+		"title": "Accidentally In Love",
+		"music genre": ["Pop rock"],
+		"release year": "2004"
+	},
+	{
+		"artists": ["Taylor Swift"],
+		"title": "Love Story",
+		"music genre": ["Country"],
+		"release year": "2009"
+	},
+	{
+		"artists": ["Journey"],
+		"title": "Don't Stop Believin'",
+		"music genre": ["Rock"],
+		"release year": "1981"
+	},
+	{
+		"artists": ["House of Pain"],
+		"title": "Jump Around",
+		"music genre": ["Pop"],
+		"release year": "1989"
+	},
+	{
+		"artists": ["Billie Eilish"],
+		"title": "bad guy",
+		"music genre": ["Alternative", "Indie"],
+		"release year": "2019"
+	}
+]
+
+// PART 2: Display all data on page, serialized.
+var strData = JSON.stringify(setlistObj);
+document.getElementById("display").innerHTML += "<div><p class = 'serialized'>" + strData + "</p></div>";
+
+// PART 3: Display setlist in a user friendly format.
+document.getElementById("display").innerHTML += "<div class = 'setlistTitle'><h1>Party Favors</h1><h2>A Cover Band for Your Next Rager!</h2></div>";
+
+// (part 3) iterate through the JSON array and print all songs
+for (i = 0; i < setlistObj.length; i++)
+{
+	songHTML = printSong(i);
+	document.getElementById("display").innerHTML += songHTML;
+}
+
+// PART 4: Filter the data
+createForm();
+
+</script>
+
+</body>
+</html>
